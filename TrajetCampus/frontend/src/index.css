@@ -115,9 +115,73 @@ button:disabled {
 .auth-page {
   min-height: 100vh;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 16px;
   padding: 20px;
+}
+
+.test-help {
+  width: 100%;
+  max-width: 420px;
+  background: var(--card);
+  border: 1px dashed var(--accent);
+  border-radius: var(--radius);
+  padding: 16px 20px;
+}
+
+.test-help h2 {
+  font-size: 15px;
+  color: var(--accent);
+  margin-bottom: 4px;
+}
+
+.test-help-note {
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+
+.test-help-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  width: 100%;
+  margin: 0 0 6px;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--primary-tint);
+  text-align: left;
+  font-size: 13px;
+}
+
+.test-help-row:last-child {
+  margin-bottom: 0;
+}
+
+.test-help-row:hover {
+  border-color: var(--primary);
+}
+
+.test-help-name {
+  font-weight: 600;
+  color: var(--text);
+}
+
+.test-help-creds {
+  color: var(--primary-dark);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.test-help-hint {
+  flex-shrink: 0;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--danger);
 }
 
 .subtitle {

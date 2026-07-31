@@ -52,23 +52,28 @@ les données échouent.
 4. Paramètres du service :
    - Name : `trajetcampus-api`
    - Runtime : `Python 3`
-   - Build command : `pip install -r requirements.txt`
-   - Start command : `gunicorn config.wsgi:application --chdir backend` 
-     (si le backend est dans un sous-dossier `backend/`, Root Directory = `backend`)
-   - Root Directory : `backend` (dans Advanced, ou via le champ dédié)
+   - Build command :
+     `pip install -r requirements.txt && python manage.py migrate --noinput && python manage.py collectstatic --noinput`
+   - Start command : `gunicorn config.wsgi:application`
+   - Root Directory : `backend`
 5. **Environment** → ajoute :
    - `SECRET_KEY` = clé forte générée (ex. `python -c "import secrets; print(secrets.token_urlsafe(50))"`)
    - `DEBUG` = `False`
    - `ALLOWED_HOSTS` = `trajetcampus-api.onrender.com`
    - `CORS_ALLOWED_ORIGINS` = l'URL Netlify (étape 3)
-6. **Créer la base de données** : Render → **New → PostgreSQL** (gratuit) →
-   note l'URL interne. Puis ajoute la variable `DATABASE_URL` et modifie
-   `settings.py` si besoin (SQLite est non persistant sur Render :
-   chaque redéploiement la réinitialise).
-   → Sinon, pour une **simple démo**, SQLite suffit mais les données
-   disparaîtront au redéploiement.
-7. Crée le superuser : onglet **Shell** du service → `python manage.py createsuperuser`
-   puis recrée les comptes de test (ou importe `db.sqlite3`).
+   - `DATABASE_URL` = l'URL du PostgreSQL créé ci-dessous
+6. **Créer la base de données (recommandé)** : Render → **New → PostgreSQL**
+   (gratuit) → copie la « Internal Database URL » dans `DATABASE_URL`.
+   Le code lit `DATABASE_URL` automatiquement (`dj-database-url`).
+   ⚠️ Sans cela, Render utilise SQLite qui est **réinitialisée à chaque
+   redéploiement**.
+7. Après le déploiement, onglet **Shell** du service → :
+   ```bash
+   python manage.py seed_demo
+   ```
+   Cela crée les **10 comptes de démonstration** (admin, Fatou, modo, Awa,
+   Ousmane, Mariama…) et des données d'exemple (trajets, réservations,
+   paiement). Le script est idempotent : relançable sans doublonner.
 8. Clique **Deploy**. À la fin, Render te donne l'URL :
    `https://trajetcampus-api.onrender.com` → **note-la**.
 
@@ -78,8 +83,7 @@ les données échouent.
 - Solutions pour la démo : `DEBUG=True` temporairement (à éviter), ou utiliser
   un stockage externe (Cloudinary, AWS S3).
 - Les fichiers statiques (admin Django) sont servis par WhiteNoise :
-  lance `python manage.py collectstatic --noinput` au déploiement
-  (ajoute-le en fin de Build command si besoin).
+  `collectstatic` est déjà dans la Build command ci-dessus.
 
 ---
 

@@ -1,11 +1,27 @@
 import { useState } from 'react'
 import { login } from '../api'
 
+const TEST_ACCOUNTS = [
+  { label: 'Admin — superuser', username: 'admin', password: 'Admin123!' },
+  { label: 'modo — modérateur', username: 'modo', password: 'Modo12345!' },
+  { label: 'Fatou — conductrice vérifiée', username: 'Fatou', password: 'Secret12345' },
+  { label: 'Moustapha — étudiant, carte à vérifier', username: 'Moustapha', password: 'Test12345!' },
+  { label: 'Ali — enseignant', username: 'Ali', password: 'Test12345!' },
+  { label: 'Astou — compte suspendu', username: 'Astou', password: 'Test12345!', hint: '⛔ Connexion refusée (403)' },
+  { label: 'Bintou — compte bloqué', username: 'Bintou', password: 'Test12345!', hint: '⛔ Connexion refusée (401)' },
+]
+
 export default function LoginPage({ onAuth, onGoRegister }) {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+
+  function quickFill(account) {
+    setUsername(account.username)
+    setPassword(account.password)
+    setError('')
+  }
 
   async function handleSubmit(event) {
     event.preventDefault()
@@ -52,6 +68,30 @@ export default function LoginPage({ onAuth, onGoRegister }) {
           </button>
         </p>
       </form>
+      {import.meta.env.DEV && (
+        <aside className="test-help">
+          <h2>🧪 Comptes de test (seed_demo)</h2>
+          <p className="test-help-note">
+            Un clic sur un compte remplit le formulaire.
+          </p>
+          {TEST_ACCOUNTS.map((account) => (
+            <button
+              key={account.username}
+              type="button"
+              className="test-help-row"
+              onClick={() => quickFill(account)}
+            >
+              <span className="test-help-name">{account.label}</span>
+              <code className="test-help-creds">
+                {account.username} / {account.password}
+              </code>
+              {account.hint && (
+                <span className="test-help-hint">{account.hint}</span>
+              )}
+            </button>
+          ))}
+        </aside>
+      )}
     </div>
   )
 }

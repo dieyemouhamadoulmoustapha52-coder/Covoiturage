@@ -17,21 +17,24 @@ class Command(BaseCommand):
     help = "Crée les comptes de démonstration et des données d'exemple."
 
     def handle(self, *args, **options):
+        now = timezone.now()
         users = [
-            # username, password, role, carte, verified, moderator, superuser
-            ("admin", "Admin123!", "student", "CARTE-ADMIN-1", False, False, True),
-            ("Fatou", "Secret12345", "student", "CARTE-2026-002", True, False, False),
-            ("modo", "Modo12345!", "student", "CARTE-MODO-1", False, True, False),
-            ("Moustapha", "Test12345!", "student", "CARTE-2026-001", False, False, False),
-            ("Aminata", "Test12345!", "student", "CARTE-2026-004", False, False, False),
-            ("Ibrahima", "Test12345!", "student", "CARTE-2026-005", False, False, False),
-            ("Ali", "Test12345!", "teacher", "CARTE-2026-003", False, False, False),
-            ("Awa", "Test12345!", "student", "CARTE-2026-006", True, False, False),
-            ("Ousmane", "Test12345!", "student", "CARTE-2026-007", False, False, False),
-            ("Mariama", "Test12345!", "student", "CARTE-2026-008", True, False, False),
+            # username, password, role, carte, verified, moderator, superuser, active, suspendu_jusqu'à
+            ("admin", "Admin123!", "student", "CARTE-ADMIN-1", False, False, True, True, None),
+            ("Fatou", "Secret12345", "student", "CARTE-2026-002", True, False, False, True, None),
+            ("modo", "Modo12345!", "student", "CARTE-MODO-1", False, True, False, True, None),
+            ("Moustapha", "Test12345!", "student", "CARTE-2026-001", False, False, False, True, None),
+            ("Aminata", "Test12345!", "student", "CARTE-2026-004", False, False, False, True, None),
+            ("Ibrahima", "Test12345!", "student", "CARTE-2026-005", False, False, False, True, None),
+            ("Ali", "Test12345!", "teacher", "CARTE-2026-003", False, False, False, True, None),
+            ("Awa", "Test12345!", "student", "CARTE-2026-006", True, False, False, True, None),
+            ("Ousmane", "Test12345!", "student", "CARTE-2026-007", False, False, False, True, None),
+            ("Mariama", "Test12345!", "student", "CARTE-2026-008", True, False, False, True, None),
+            ("Astou", "Test12345!", "student", "CARTE-2026-009", False, False, False, False, now + timedelta(days=7)),
+            ("Bintou", "Test12345!", "student", "CARTE-2026-010", False, False, False, False, None),
         ]
         created = []
-        for username, password, role, card, verified, mod, superuser in users:
+        for username, password, role, card, verified, mod, superuser, active, suspended_until in users:
             user, was_created = CustomUser.objects.update_or_create(
                 username=username,
                 defaults={
@@ -42,6 +45,8 @@ class Command(BaseCommand):
                     "is_moderator": mod,
                     "is_superuser": superuser,
                     "is_staff": superuser,
+                    "is_active": active,
+                    "suspended_until": suspended_until,
                     "phone_number": f"+22177{str(len(created) + 10).zfill(7)}",
                 },
             )
@@ -49,7 +54,7 @@ class Command(BaseCommand):
             user.save()
             created.append((username, was_created))
 
-        self.stdout.write(self.style.SUCCESS("Comptes OK (10) :"))
+        self.stdout.write(self.style.SUCCESS("Comptes OK (12) :"))
         for username, was_created in created:
             tag = "créé" if was_created else "déjà présent"
             self.stdout.write(f"  - {username} ({tag})")
