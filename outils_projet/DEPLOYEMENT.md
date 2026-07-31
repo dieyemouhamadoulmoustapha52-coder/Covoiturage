@@ -123,6 +123,11 @@ Puis **Deploy** à nouveau sur Render (ou attends le redéploiement auto).
 2. Teste le parcours : recherche de trajets → réservation → dashboard.
 3. Teste le téléversement de carte (point le plus fragile : média + CORS).
 4. En cas d'erreur :
+   - **Page blanche sans erreur console** → vérifie qu'il n'y a **pas de fichier
+     `frontend/public/_headers`** : une règle globale du type
+     `Content-Type: application/javascript` casse `index.html`
+     (le navigateur ne le parse plus comme HTML, `#root` reste vide, zéro erreur).
+     Supprime le fichier et redéploie. ⚠️ Ce bug nous a coûté cher !
    - **Netlify** → Deploys → logs du build (erreur de build / env manquante).
    - **Render** → Logs du service (trace Django, ex. `ALLOWED_HOSTS` manquant).
    - **CORS** → dans la console du navigateur : `Access-Control-Allow-Origin`

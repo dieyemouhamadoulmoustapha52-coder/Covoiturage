@@ -9,25 +9,52 @@ import ProfilePage from './pages/ProfilePage'
 const TOKEN_KEY = 'trajetcampus_token'
 const USER_KEY = 'trajetcampus_user'
 
+function safeGet(key) {
+  try {
+    return localStorage.getItem(key)
+  } catch {
+    return null
+  }
+}
+
+function safeSet(key, value) {
+  try {
+    localStorage.setItem(key, value)
+  } catch {
+    // stockage indisponible (mode privé…) : la session vit en mémoire
+  }
+}
+
+function readStoredUser() {
+  const saved = safeGet(USER_KEY)
+  if (!saved) return null
+  try {
+    return JSON.parse(saved)
+  } catch {
+    return null
+  }
+}
+
 export default function App() {
-  const [token, setToken] = useState(() => localStorage.getItem(TOKEN_KEY))
-  const [user, setUser] = useState(() => {
-    const saved = localStorage.getItem(USER_KEY)
-    return saved ? JSON.parse(saved) : null
-  })
+  const [token, setToken] = useState(() => safeGet(TOKEN_KEY))
+  const [user, setUser] = useState(readStoredUser)
   const [page, setPage] = useState('login')
   const [view, setView] = useState('trips')
 
   function handleAuth(data) {
-    localStorage.setItem(TOKEN_KEY, data.token)
-    localStorage.setItem(USER_KEY, JSON.stringify(data.user))
+    safeSet(TOKEN_KEY, data.token)
+    safeSet(USER_KEY, JSON.stringify(data.user))
     setToken(data.token)
     setUser(data.user)
   }
 
   function handleLogout() {
-    localStorage.removeItem(TOKEN_KEY)
-    localStorage.removeItem(USER_KEY)
+    try {
+      localStorage.removeItem(TOKEN_KEY)
+      localStorage.removeItem(USER_KEY)
+    } catch {
+      // stockage indisponible : rien à retirer
+    }
     setToken(null)
     setUser(null)
     setPage('login')
@@ -35,7 +62,7 @@ export default function App() {
   }
 
   function handleUserUpdate(updatedUser) {
-    localStorage.setItem(USER_KEY, JSON.stringify(updatedUser))
+    safeSet(USER_KEY, JSON.stringify(updatedUser))
     setUser(updatedUser)
   }
 
