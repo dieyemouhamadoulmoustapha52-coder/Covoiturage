@@ -1,4 +1,4 @@
-const BASE_URL = import.meta.env.VITE_API_URL || '/api'
+const baseUrl = (import.meta.env.VITE_API_URL || '/api').replace(/\/+$/, '')
 
 async function request(path, options = {}) {
   const headers = { ...(options.headers || {}) }
@@ -7,7 +7,11 @@ async function request(path, options = {}) {
     if (typeof body !== 'string') body = JSON.stringify(body)
     headers['Content-Type'] = 'application/json'
   }
-  const response = await fetch(`${BASE_URL}${path}`, { ...options, headers, body })
+  const response = await fetch(`${baseUrl}/${path.replace(/^\/+/, '')}`, {
+    ...options,
+    headers,
+    body,
+  })
   const data = await response.json().catch(() => ({}))
   if (!response.ok) {
     const message =

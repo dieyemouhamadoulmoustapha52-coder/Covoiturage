@@ -128,6 +128,15 @@ Puis **Deploy** à nouveau sur Render (ou attends le redéploiement auto).
      `Content-Type: application/javascript` casse `index.html`
      (le navigateur ne le parse plus comme HTML, `#root` reste vide, zéro erreur).
      Supprime le fichier et redéploie. ⚠️ Ce bug nous a coûté cher !
+   - **Erreur 404 sur tous les appels API (`/api/auth/login/`…)** → vérifie la
+     valeur de `VITE_API_URL` : elle doit être `https://trajetcampus-api.onrender.com/api`
+     — **sans `/` final** (sinon l'URL devient `/api//auth/login/` → 404 Django)
+     et **avec le préfixe `/api`** (sinon `/auth/login/` → 404 Django).
+     Le code frontend tolère maintenant les slashes en trop
+     (`api.js` normalise l'URL), mais `/api` reste obligatoire.
+     Vérifie aussi côté Render : service bien démarré
+     (`gunicorn config.wsgi:application` avec Root Directory = `backend`),
+     `ALLOWED_HOSTS` = le domaine onrender.com, et code à jour (redéployé).
    - **Netlify** → Deploys → logs du build (erreur de build / env manquante).
    - **Render** → Logs du service (trace Django, ex. `ALLOWED_HOSTS` manquant).
    - **CORS** → dans la console du navigateur : `Access-Control-Allow-Origin`
