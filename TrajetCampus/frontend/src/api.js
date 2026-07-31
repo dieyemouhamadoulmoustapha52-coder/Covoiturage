@@ -1,4 +1,12 @@
-const baseUrl = (import.meta.env.VITE_API_URL || '/api').replace(/\/+$/, '')
+function resolveBaseUrl() {
+  const configured = (import.meta.env.VITE_API_URL || '').trim()
+  if (/^https?:\/\//i.test(configured)) {
+    return new URL(configured).href.replace(/\/+$/, '')
+  }
+  return (configured || '/api').replace(/\/+$/, '')
+}
+
+const baseUrl = resolveBaseUrl()
 
 async function request(path, options = {}) {
   const headers = { ...(options.headers || {}) }
