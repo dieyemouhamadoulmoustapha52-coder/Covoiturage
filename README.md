@@ -1,4 +1,4 @@
-# 🚗 TrajetCampus
+# 🚗 Covoiturage
 
 Application web de **covoiturage** dédiée à la communauté universitaire de l'**ISEP** (Dakar, Sénégal).
 
